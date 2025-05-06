@@ -36,7 +36,7 @@ public class ExamServiceImpl implements ExamService{
             List<String> questionsList = questionRepository.findQuestionsByExamId(exam.getId());
             exam.setQuestions(questionsList);
         }
-
         return exam;
     }
+
 }

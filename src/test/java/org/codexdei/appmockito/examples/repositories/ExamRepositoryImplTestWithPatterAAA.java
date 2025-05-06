@@ -2,7 +2,6 @@ package org.codexdei.appmockito.examples.repositories;
 
 import org.codexdei.appmockito.examples.models.Exam;
 import org.codexdei.appmockito.examples.services.ExamService;
-import org.codexdei.appmockito.examples.services.ExamServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +23,7 @@ class ExamServiceImplTest2 {
     void setup() {
         // Arrange común
         mockRepository = mock(ExamRepositoryOther.class);
-        examService = new ExamServiceImpl(mockRepository);
+        //examService = new ExamServiceImpl(mockRepository,examService);
         examenesEjemplo = Arrays.asList(
                 new Exam(5L, "Mathematics"),
                 new Exam(6L, "Languages"),
