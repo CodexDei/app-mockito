@@ -10,12 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,7 +23,7 @@ class ExamServiceImplTest {
     //Aplicamos el patron de diseño inyeccion de dependencias, para no crear los mock manualmente, por
     //ello ahora estan comentados
     @Mock
-    ExamRepository repository;
+    ExamRepository examRepository;
     @Mock
     QuestionRepository questionRepository;
     @InjectMocks
@@ -50,7 +48,7 @@ class ExamServiceImplTest {
 
         List<Exam> data = Arrays.asList(new Exam(5L,"Mathematics"), new Exam(6L,"Lenguages"),
                 new Exam(7L,"Sciences"), new Exam(8L,"Programming"));
-        when(repository.findAll()).thenReturn(data);
+        when(examRepository.findAll()).thenReturn(data);
         //Act
         Optional<Exam> exam = service.findExamByName("Mathematics");
         //Assert
@@ -64,7 +62,7 @@ class ExamServiceImplTest {
     void findAllListEmpty() {
 
         List<Exam> data = Collections.emptyList();
-        when(repository.findAll()).thenReturn(data);
+        when(examRepository.findAll()).thenReturn(data);
         //Act
         Optional<Exam> exam = service.findExamByName("Mathematics");
         //Assert
@@ -77,13 +75,13 @@ class ExamServiceImplTest {
     @Test
     void testQuestionsExam() {
         //Arrange:
-        when(repository.findAll()).thenReturn(Datas.EXAMENES);
-        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Datas.QUESTIONS);
+        when(examRepository.findAll()).thenReturn(Data.EXAMENES);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
         //Act:
         Exam exam = service.findExamByNameWithQuestions("Sciences");
         //Assert:
         List<String> questions = exam.getQuestions();
-        int expectedSize = Datas.QUESTIONS.size();
+        int expectedSize = Data.QUESTIONS.size();
 
         assertAll(
             () -> assertEquals(expectedSize,exam.getQuestions().size(),
@@ -96,13 +94,13 @@ class ExamServiceImplTest {
     @Test
     void testQuestionsExamVerify() {
         //Arrange:
-        when(repository.findAll()).thenReturn(Datas.EXAMENES);
-        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Datas.QUESTIONS);
+        when(examRepository.findAll()).thenReturn(Data.EXAMENES);
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
         //Act:
         Exam exam = service.findExamByNameWithQuestions("Sciences");
         //Assert:
         List<String> questions = exam.getQuestions();
-        int expectedSize = Datas.QUESTIONS.size();
+        int expectedSize = Data.QUESTIONS.size();
 
         assertAll(
                 () -> assertEquals(expectedSize,exam.getQuestions().size(),
@@ -111,19 +109,35 @@ class ExamServiceImplTest {
                         "The question is not in the list of questions")
         );
         //Verifica si se llamo a determinado metodo, la llamada al metodo debe ser fuera de los parentesis
-        verify(repository).findAll();
+        verify(examRepository).findAll();
         verify(questionRepository).findQuestionsByExamId(anyLong());
     }
 
     @Test
     void testNotExamVerify() {
         //Arrange:
-        when(repository.findAll()).thenReturn(Collections.emptyList());
-        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Datas.QUESTIONS);
+        when(examRepository.findAll()).thenReturn(Collections.emptyList());
+        when(questionRepository.findQuestionsByExamId(anyLong())).thenReturn(Data.QUESTIONS);
         //Act:
         Exam exam = service.findExamByNameWithQuestions("Sciences");
         assertNull(exam);
-        verify(repository).findAll();
+        verify(examRepository).findAll();
         verify(questionRepository).findQuestionsByExamId(anyLong());
+    }
+
+    @Test
+    void examTestSave() {
+
+        Exam newExam = Data.EXAM;
+        newExam.setQuestions(Data.QUESTIONS);
+
+        when(examRepository.saveExam(any(Exam.class))).thenReturn(Data.EXAM);
+        Exam exam = service.saveExam(newExam);
+        assertNotNull(exam.getId());
+        assertEquals(8L,exam.getId());
+        assertEquals("Physics",exam.getName());
+
+        verify(examRepository).saveExam(newExam);
+        verify(questionRepository).saveMultiple(newExam.getQuestions());
     }
 }

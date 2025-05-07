@@ -39,4 +39,14 @@ public class ExamServiceImpl implements ExamService{
         return exam;
     }
 
+    @Override
+    public Exam saveExam(Exam exam) {
+
+        if (!exam.getQuestions().isEmpty()){
+            questionRepository.saveMultiple(exam.getQuestions());
+        }
+
+        return examRepository.saveExam(exam);
+    }
+
 }

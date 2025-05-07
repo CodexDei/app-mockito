@@ -2,11 +2,15 @@ package org.codexdei.appmockito.examples.repositories;
 
 import org.codexdei.appmockito.examples.models.Exam;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class ExamRepositoryImpl implements ExamRepository{
+
+    @Override
+    public Exam saveExam(Exam exam) {
+        return null;
+    }
 
     @Override
     public List<Exam> findAll() {
